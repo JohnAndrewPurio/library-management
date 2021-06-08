@@ -1,0 +1,29 @@
+- var categories = categories;
+
+head
+    title Greatest Library
+    link(rel="stylesheet" href="styles.css")
+body
+    form(action="/books" method="POST" class="form-container")
+        h2 Add a New Book
+
+        div(class="form-fields")
+            label(for="title") 
+                b Title:
+            input(type="text" name="title" placeholder="Enter the title of the book")
+        div(class="form-fields")
+            label(for="price") 
+                b Price:
+            input(type="number" name="price" placeholder="Enter the price of the book")
+        div(class="form-fields")
+            label(for="authors") 
+                b Author/s:
+            input(type="text" name="authors" placeholder="Enter the authors of the books(separated in commas)")
+        div(class="form-fields")
+            label(for="category") 
+                b Category:
+            select(name="category")
+                each category in categories
+                    option(value=`${category.name}`)= `${category.name}`
+
+        input(type="submit" value="Submit" class="submit")

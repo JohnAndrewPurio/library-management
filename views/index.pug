@@ -1,0 +1,17 @@
+head
+    title Greatest Library
+    link(rel="stylesheet" href="styles.css")
+    link(rel="icon" href="favicon.ico")
+body
+    h1=message
+
+    h3(class="title") Available Books
+
+    - var books = books;
+    ul(class="books")
+        each book in books
+            li(class="book") 
+                b= `${book.title}` 
+                p= ` by ${book.authors.join(',')}`
+
+    a(class="add-book" href="/books") Add Book

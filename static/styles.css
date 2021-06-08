@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    background-color: #010b13;
+    width: 100vw;
+    height: 100vh;
+    padding: 3vmin;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+h1 {
+    height: 10%;
+    width: 95%;
+}
+
+h3 {
+    width: 95%;
+    height: 5%;
+}
+
+.title {
+    margin: 2vmin;
+}
+
+.books {
+    width: 100%;
+    height: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vmin;
+    overflow-y: auto;
+}
+
+.book {
+    width: 100%;
+    padding: 1.5vmin;
+    border: 1vmin solid white;
+}
+
+p {
+    margin: 0 2vmin;
+}
+
+.add-book {
+    border-radius: 999vmin;
+    background-color: firebrick;
+    color: white;
+    position: absolute;
+    bottom: 3vmin;
+    right: 3vmin;
+    padding: 2vmin;
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    text-align: center;
+    z-index: 1;
+}
+
+.form-container {
+    width: 40%;
+    background-color: white;
+    color: #010b13;
+    padding: 3vmin;
+    border-radius: 1vmin;
+    box-shadow: 0 0 1vmin white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container .form-fields {
+    display: flex;
+    gap: 1vmin;
+    margin: 2vmin;
+    width: 100%;
+}
+
+.form-fields > label {
+    width: 15%;
+    padding: 1vmin;
+}
+
+.form-fields > input {
+    width: 85%;
+    padding: 1vmin;
+}
+
+.form-container > h2 {
+    width: 100%;
+    text-align: center;
+}
+
+.submit {
+    border-radius: 999vmin;
+    padding: 1.5vmin;
+    width: 15%;
+    background-color: firebrick;
+    color: white;
+    border: none;
+}
