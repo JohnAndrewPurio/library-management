@@ -59,13 +59,15 @@ async function searchBook(query) {
 
 async function getBooksByCategory(category) {
     try {
-        const categoryData = await connection.collection
-        const data = await connection.collection('categories').find({category: category})
+        const data = await connection.collection('categories').findOne({name: category})
+        const books = await connection.collection('books').find({category: data._id}).toArray()
+
+        return books
     } catch(e) {
         console.log(e)
     }
 }
 
 module.exports = {
-    addBook, deleteBook, searchBook
+    addBook, deleteBook, searchBook, getBooksByCategory
 }

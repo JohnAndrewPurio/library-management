@@ -35,6 +35,12 @@ function querySearch() {
     return response
 }
 
+function queryGetBooksByCategory() {
+    const response = readlineSync.question("\n\nWhat is the category of the books you want to search? ")
+
+    return response
+} 
+
 function queryAddMember() {
     const response = readlineSync.question("\n\nWhat is the name of the new member? ")
 
@@ -70,5 +76,5 @@ function queryBookIssueHistory() {
 
 module.exports = {
     createNewCategory, createNewBook, toDeleteCategory, toDeleteBook, querySearch, queryAddMember, queryDeleteMember, queryIssueBook,
-    queryReturnBook, queryBookIssueHistory
+    queryReturnBook, queryBookIssueHistory, queryGetBooksByCategory
 }

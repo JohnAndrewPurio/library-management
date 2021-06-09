@@ -15,7 +15,7 @@ function displayOptions() {
         5. Add a book
         6. Delete a book
         7. Search a book
-        8. Get all books of a category*
+        8. Get all books of a category
 
     ---Members Operations---
         9. List of members
@@ -24,9 +24,9 @@ function displayOptions() {
 
     ---Issues Operations---
         12. Issue a new book
-        13. Return a book*
+        13. Return a book
         14. See active issues
-        15. Get issue history of a book*
+        15. Get issue history of a book
 
     ---Exit---
         0. Exit 

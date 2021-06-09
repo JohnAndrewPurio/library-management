@@ -13,7 +13,8 @@ async function issueBook(bookTitle, memberIssuer) {
             issuer: issuer,
             book: book,
         }
-        const checkAvailability = await connection.collection('issues').findOne({book: book})
+
+        const checkAvailability = await connection.collection('issues').findOne({book: book, isAvailable: false})
         if( checkAvailability ) 
             return `The ${book.title} book has already been issued`
 
@@ -30,13 +31,14 @@ async function returnBook(bookTitle) {
     const book = await connection.collection('books').findOne({title: bookTitle})
     if(!book) return `There is no such book entitled ${bookTitle} available`
 
-    const checkAvailability = await connection.collection('issues').findOne({book: book._id})
+    const checkAvailability = await connection.collection('issues').findOne({book: book._id, isAvailable: false})
     if(!checkAvailability) 
         return `The book entitle ${bookTitle} has not yet been issued`
 
-    try {
-        await connection.collection('issues').updateMany({book: book._id}, {$set: {isAvailable: true}})
+    console.log( await ( connection.collection('issues').find({book: book._id}) ).toArray() )
 
+    try {
+        await connection.collection('issues').updateOne({book: book._id, isAvailable: false}, { $set: {isAvailable: true} })
 
         return `Book entitled ${bookTitle} was successfully returned`
     } catch(e) {
@@ -55,8 +57,6 @@ async function activeIssues() {
             const issuer = await connection.collection('members').findOne({_id: issue.issuer})
             let returnDate = new Date()
 
-            console.log(issue)
-
             returnDate.setDate(issue.createdAt.getDate() + issue.returnDays)
 
             result.push(`${book.title} book issued by ${issuer.name} and to be returned on or before ${returnDate.toLocaleDateString()}`)
@@ -73,7 +73,7 @@ async function getIssueHistory(bookTitle) {
     if(!book) return `There is no such book entitled ${bookTitle} in your library`
 
     try {
-        const bookIssues = await connection.collection('issues').find({book: book}).toArray()
+        const bookIssues = await connection.collection('issues').find({book: book._id}).toArray()
         if(!bookIssues) return `The book has not been issued yet`
 
         return bookIssues

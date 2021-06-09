@@ -5,18 +5,18 @@ const displayOptions = require('./helperFunctions/displayOptions')
 const connectToDB = require('./helperFunctions/connectToDB')
 const {
     createNewCategory, createNewBook, toDeleteCategory, toDeleteBook, querySearch, queryAddMember, queryDeleteMember, queryIssueBook,
-    queryReturnBook, queryBookIssueHistory
+    queryReturnBook, queryBookIssueHistory, queryGetBooksByCategory
 } = require('./helperFunctions/queries')
 
 const {readData, addCategory, deleteCategory} = require('./controllers/categoryController')
-const {addBook, deleteBook, searchBook} = require('./controllers/bookController')
+const {addBook, deleteBook, searchBook, getBooksByCategory} = require('./controllers/bookController')
 const {addMember, deleteMember} = require('./controllers/memberController')
 const {issueBook, returnBook, activeIssues, getIssueHistory} = require('./controllers/issueController')
 
 async function main() {
     await connectToDB('library')
     const selected = displayOptions()
-    let response, category, data
+    let response, category, data, bookData
 
     try {
         switch(Number(selected)) {
@@ -58,21 +58,18 @@ async function main() {
                 displayData(bookData, 'books')
     
                 break
-            // case 8:
-            //  const response = querySearch()
-            //  const bookData = await searchBook(response)
-            //  displayData(bookData, 'books')
+            case 8:
+                response = queryGetBooksByCategory()
+                bookData = await getBooksByCategory(response)
+                console.log(`\nThe book/s with category ${response} is/are:`)
+                displayData(bookData, 'books')
 
-            //  break
+                break
             case 9: 
-                try {
-                    const category = 'members'
-                    const data = await readData(category)
-                    displayData( data, category )
-                } catch(e) {
-                    console.log(e)
-                }
-    
+                category = 'members'
+                data = await readData(category)
+                displayData( data, category )
+
                 break
             case 10:
                 response = queryAddMember()
@@ -100,8 +97,9 @@ async function main() {
                 break
             case 15: 
                 response = queryBookIssueHistory()
-                console.log( await getIssueHistory(response) )
-                
+                data = await getIssueHistory(response)
+                displayIssuedBooks(data)
+
                 break
             case 0:
                 console.clear()
@@ -121,7 +119,6 @@ async function main() {
 }
 
 function displayData(data, category) {
-    console.clear()
     console.log('\n\n********************\n')
     if(!data.length) console.log(`No ${category} found`)
     data.forEach( ele => console.log(ele.name ? ele.name: ele.title + ' by ' + ele.authors) )
