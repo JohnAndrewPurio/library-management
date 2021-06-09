@@ -76,7 +76,14 @@ async function getIssueHistory(bookTitle) {
         const bookIssues = await connection.collection('issues').find({book: book._id}).toArray()
         if(!bookIssues) return `The book has not been issued yet`
 
-        return bookIssues
+        return bookIssues.map( async (issue) => {
+            const newIssue = issue
+
+            newIssue['book'] = await connection.collection('books').findOne({_id: issue.book})
+            newIssue['issuer'] = await connection.collection('members').findOne({_id: issue.issuer})
+
+            return newIssue
+        })
     } catch(e) {
         console.log(e)
     }

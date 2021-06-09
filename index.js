@@ -97,8 +97,7 @@ async function main() {
                 break
             case 15: 
                 response = queryBookIssueHistory()
-                data = await getIssueHistory(response)
-                displayIssuedBooks(data)
+                displayIssuedBooks(await getIssueHistory(response))
 
                 break
             case 0:
@@ -126,7 +125,19 @@ function displayData(data, category) {
 }
 
 function displayIssuedBooks(issuedBooks) {
-    issuedBooks.forEach( book => console.log(book) )
+    issuedBooks.forEach( async (issue, index) => {
+        const data = await issue 
+        const result = `
+        ********************************
+            Issue #${index + 1}:
+            Book Title: ${data.book.title}
+            Issuer: ${ data.issuer.name }
+            Date Issued: ${ data.createdAt.toDateString() }
+        ********************************
+        `
+
+        console.log(result)
+    })
 }
 
 main()
