@@ -3,7 +3,7 @@ const { readData } = require('../controllers/categoryController')
 const { addBook } = require('../controllers/bookController')
 const router = express.Router()
 
-router.use(express.urlencoded())
+router.use(express.urlencoded({ extended: true }))
 
 router
     .route('/')

@@ -1,4 +1,4 @@
-const {connection} = require('mongoose')
+const {connection, mongo} = require('mongoose')
 const BookModel = require('../models/book')
 
 async function addBook({title, authors, price, category}) {
@@ -26,8 +26,8 @@ async function addBook({title, authors, price, category}) {
 }
 
 async function deleteBook(title) {
-    const query = await connection.collection('books').findOne({title: title})
-
+    let query = await connection.collection('books').findOne({title: title})
+    
     if(!query) return `No such book entitled ${title}`
 
     try {
@@ -35,6 +35,18 @@ async function deleteBook(title) {
         await category.deleteOne({title: title}) 
 
         return `\n\n${title} book successfully deleted\n\n`
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+async function deleteBookRequest(bookID) {
+    const id = mongo.ObjectId(bookID)
+
+    try {
+        const category = await connection.collection('books')
+        await category.deleteOne({_id: id}) 
+
     } catch(e) {
         console.log(e)
     }
@@ -69,5 +81,5 @@ async function getBooksByCategory(category) {
 }
 
 module.exports = {
-    addBook, deleteBook, searchBook, getBooksByCategory
+    addBook, deleteBook, searchBook, getBooksByCategory, deleteBookRequest
 }
