@@ -1,6 +1,28 @@
+const { config } = require('dotenv')
+
+config()
+
 const express = require('express')
 const router = express.Router()
-const { addNewUser, getAllUsers, loginUser } = require('../controllers/userController') 
+const multer = require('multer')
+const jwt = require('jsonwebtoken')
+const { addNewUser, getAllUsers, loginUser } = require('../controllers/userController')
+
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
+const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY
+const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "static/uploads/")
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname)
+    }
+})
+
+const multipart = multer({ storage: storage })
 
 router.use(express.urlencoded({ extended: true }))
 
@@ -10,36 +32,47 @@ router.get('/', async (request, response) => {
     response.send(users)
 })
 
-router.post('/signup', async (request, response) => {
-    const { body } = request
+router.post('/signup', multipart.single("profileImage"), signUpPostHandler)
 
-    console.log(body)
+router.post('/login', logInPostHandler)
+
+async function signUpPostHandler(request, response) {
+    const { body } = request
 
     const result = await addNewUser(body)
 
-    if(result.error) {
+    if (result.error) {
         response.statusCode = 400
         response.send(result.error)
 
         return
     }
 
-    response.send(result)
-})
+    response.json(result)
+}
 
-router.post('/login', async (request, response) => {
+async function logInPostHandler(request, response) {
     const { body } = request
 
     const result = await loginUser(body)
 
     if(result.error) {
         response.statusCode = 400
-        response.send(result.error)
+        response.send(result)
 
         return
     }
 
-    response.send(result)
-})
+    const accessToken = jwt.sign(result, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY })
+    const refreshToken = jwt.sign(result, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY })
+    const tokenData = {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        access_token_expiry: 60,
+        refresh_token_expiry: 60 * 60 * 24 * 3
+    }
+
+    response.json( tokenData )
+}
 
 module.exports = router

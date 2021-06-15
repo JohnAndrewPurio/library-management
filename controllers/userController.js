@@ -29,14 +29,15 @@ async function addNewUser({name, email, password, profileImage}) {
 async function loginUser({email, password}) {
     try {
         const user = await connection.collection('users').findOne({email: email})
-        await bcrypt.compare(password, user.password, (error, result) => {
-            // if(error) return {error}
-            // if(!result) return {error: 'Invalid Password'}
+        const passwordHash = await bcrypt.compare(password, user.password)
+        
+        if(!user) 
+            return { error: 'Incorrect Email' }
 
-            // console.log(error, result, user.password)
-        })
+        if(!passwordHash) 
+            return { error: 'Incorrect Password' }
 
-        return user
+        return {user, passwordHash}
     } catch(error) {
         return {error}
     }
