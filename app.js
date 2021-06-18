@@ -8,7 +8,7 @@ const port = 4000
 const { readData } = require('./controllers/categoryController')
 const { deleteBookRequest } = require('./controllers/bookController')
 const connectToDB = require('./helperFunctions/connectToDB')
-const verifyToken = require('./helperFunctions/verifyToken')
+const { verifyToken } = require('./helperFunctions/verifyToken')
 const listRouter = require('./routes/listRoute')
 
 connectToDB('library')

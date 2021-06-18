@@ -7,11 +7,14 @@ const router = express.Router()
 const multer = require('multer')
 const jwt = require('jsonwebtoken')
 const { addNewUser, getAllUsers, loginUser } = require('../controllers/userController')
+const { verifyRefreshToken } = require('../helperFunctions/verifyToken')
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
 const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY
 const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY
+
+const refreshTokens = []
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -35,6 +38,8 @@ router.get('/', async (request, response) => {
 router.post('/signup', multipart.single("profileImage"), signUpPostHandler)
 
 router.post('/login', logInPostHandler)
+
+router.get('/token', verifyRefreshToken, tokenGetHandler)
 
 async function signUpPostHandler(request, response) {
     const { body } = request
@@ -65,14 +70,38 @@ async function logInPostHandler(request, response) {
 
     const accessToken = jwt.sign(result, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY })
     const refreshToken = jwt.sign(result, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRY })
+
+    refreshTokens.push(refreshToken)
+    
     const tokenData = {
         access_token: accessToken,
         refresh_token: refreshToken,
-        access_token_expiry: 60,
-        refresh_token_expiry: 60 * 60 * 24 * 3
+        access_token_expiry: ACCESS_TOKEN_EXPIRY,
+        refresh_token_expiry: REFRESH_TOKEN_EXPIRY
     }
 
     response.json( tokenData )
+}
+
+async function tokenGetHandler(request, response) {
+    const { headers } = request
+    const accessToken = headers['authorization'].split(' ')[1]
+
+    try {
+        const { email } = await jwt.verify(accessToken, REFRESH_TOKEN_SECRET)
+        const newAccessToken = jwt.sign({ email } , ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRY })
+
+        const tokenData = {
+            access_token: newAccessToken,
+            access_token_expiry: ACCESS_TOKEN_EXPIRY,
+        }
+
+        response.json(tokenData)
+    } catch(error) {
+        response.statusCode = 401
+        response.json(error)
+        console.log(error)
+    }
 }
 
 module.exports = router
